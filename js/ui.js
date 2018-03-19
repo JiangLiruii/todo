@@ -6,9 +6,7 @@
     let newTodoDom = $('#new-todo');
     let syncDom = $('#sync-wrapper');
     let todolist = $('#todo-list');
-
-    // 监听回车事件
-    newTodoDom.on('keypress',onKeyPress);
+    newTodoDom.on('keyup',onKeyPress);
     $.subscribe('item:added',onAdded);
     $.subscribe('item:syncError', onSyncError);
     $.subscribe('item:showTodos', onShow);
@@ -17,7 +15,6 @@
       todolist.html('');
       rows.forEach(function(row) {
       let data = row.doc;
-      console.log(data.completed);
       let newLi = $(`<li><input type="checkbox" class="toggle"><label>${data.title}</label><span class="date">${data.date}</span><button class="destroy"></button>`);
       let toggle = newLi.find('input.toggle');
       toggle[0].checked = data.completed;
@@ -26,23 +23,27 @@
       destroy.on('click',onDestroy.bind(this,data));
       todolist.append(newLi);
       })
-    }
+    };
+
     function onDestroy(todo,e) {
-      console.log(todo);
       $.publish('item:remove',[todo]);
-    }
+    };
+
     function itemToggle(todo,e){
       todo.completed = e.target.checked;
       $.publish('item:toggle',[todo]);
-    }
+    };
+
     function onAdded(e,data) {
       $.publish('item:update');
       newTodoDom.val('');
       syncDom.attr('data-sync-state', 'synced');      
     };
+
     function onSyncError() {
       syncDom.attr('data-sync-state', 'error');            
     };
+
     function onKeyPress(event) {
       let inputValue = $(event.target).val().trim(),
           data = {},
@@ -57,6 +58,7 @@
         event.target.blur();
       }
     };
+
     $.publish('item:init');
     $.publish('item:update');
   })
