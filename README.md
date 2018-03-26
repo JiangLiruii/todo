@@ -1,4 +1,4 @@
-pouchdb-getting-started-todo
+Pouchdb-getting-started-todo
 ============================
 
-this app based on PouchDB templete and use pubsub pattern to reorganized the js files. 
+This Todo app based on npm module management , PouchDB and pubsub pattern to reorganized the js, css files
