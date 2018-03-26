@@ -7,19 +7,19 @@
   const db = new PouchDB('todos');
   const remoteCouch = 'http://jlr:jlr@localhost:5984/todos';
 
-  function itemCompleted(e, todo) {
-    db.put(todo, (err, data) => {
-      if (!err) {
-        console.error(data);
-      } else {
-        console.log(err);
-      }
+  function itemCompleted(e, todo, callback) {
+    db.put(todo, () => {
+      callback();
+      showTodos();
     });
   }
   function itemRemove(e, todo) {
     db.remove(todo)
       .then(() => {
         showTodos();
+      })
+      .catch((err) => {
+        console.error(err);
       });
   }
   function showTodos() {
@@ -31,7 +31,7 @@
   }
   // 同步
   function sync() {
-    const opts = { live: true };
+    const opts = { live: true, origins: '*' };
     db.replicate.to(remoteCouch, opts, syncError);
     db.replicate.from(remoteCouch, opts, syncError);
   }

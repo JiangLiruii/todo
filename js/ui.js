@@ -15,7 +15,7 @@
       todolist.html('');
       rows.forEach((row) => {
         const data = row.doc;
-        const newLi = $(`<li><input type="checkbox" class="toggle"><label>${data.title}</label><span class="date">${data.date}</span><button class="destroy"></button>`);
+        const newLi = $(`<li class="${data.completed ? 'completed' : ''}"><input type="checkbox" class="toggle"><label>${data.title}</label><span class="date">${data.date}</span><button class="destroy"></button>`);
         const toggle = newLi.find('input.toggle');
         toggle[0].checked = data.completed;
         toggle.on('change', itemToggle.bind(this, data));
@@ -23,6 +23,7 @@
         destroy.on('click', onDestroy.bind(this, data));
         todolist.append(newLi);
       });
+      count();
     }
     function onDestroy(todo) {
       console.log(todo);
@@ -30,7 +31,8 @@
     }
     function itemToggle(todo, e) {
       todo.completed = e.target.checked;
-      $.publish('item:toggle', [todo]);
+      $(e.target).parent().toggleClass('completed');
+      $.publish('item:toggle', [todo, count]);
     }
     function onAdded() {
       $.publish('item:update');
@@ -53,6 +55,9 @@
         $.publish('item:add', [data]);
         event.target.blur();
       }
+    }
+    function count() {
+      $('#todo-count').text(`todo-count: ${$('li').length - $('li.completed').length}`);
     }
     $.publish('item:init');
     $.publish('item:update');
