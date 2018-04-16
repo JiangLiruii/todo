@@ -1,11 +1,12 @@
 (function ($) {
-  $.subscribe('item:init', sync);
+  $.subscribe('item:init', syncs);
   $.subscribe('item:update', showTodos);
   $.subscribe('item:add', addList);
   $.subscribe('item:toggle', itemCompleted);
   $.subscribe('item:remove', itemRemove);
+  $.subscribe('item:button',buttonClick);
   const db = new PouchDB('todos');
-  const remoteCouch = 'http://jlr:jlr@localhost:5984/todos';
+  const remoteCouch = 'https://fcc9803d-0f80-4217-9b12-dd98150bbf3d-bluemix.cloudant.com/todos';
 
   function itemCompleted(e, todo, callback) {
     db.put(todo, () => {
@@ -30,8 +31,8 @@
     });
   }
   // 同步
-  function sync() {
-    const opts = { live: true, origins: '*' };
+  function syncs() {
+    const opts = { live: true };
     db.replicate.to(remoteCouch, opts, syncError);
     db.replicate.from(remoteCouch, opts, syncError);
   }
@@ -42,12 +43,23 @@
   function addList(e, data) {
     db.put(data, (err, res) => {
       if (!err) {
-        console.log('Successfully put to CouchDB');
-        console.log(res);
         $.publish('item:added', [data]);
       } else {
         console.error('something wrong:', err);
       }
     });
+  }
+  function buttonClick(e,type) {
+    db.allDocs({ include_docs: true, descending: true }).then((doc) => {
+      let rows = [];
+      console.log(doc);
+      doc.rows.forEach(element => {
+        if (element.doc.completed === type) {
+          rows.push(element);
+        }
+      });
+      $.publish('item:showTodos',[rows]);
+
+    }).catch(err=>console.error(err))
   }
 }(jQuery));
