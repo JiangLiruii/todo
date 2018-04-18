@@ -5,10 +5,14 @@
     const syncDom = $('#sync-wrapper');
     const todolist = $('#todo-list');
     const buttons = $('#buttons button');
+    const select = $('select');
+    select.on('change', (e) => {
+      console.log(e.target.value);
+    });
 
     // 监听回车事件
     newTodoDom.on('keypress', onKeyPress);
-    buttons.on('click',onButtonClick);
+    buttons.on('click', onButtonClick);
     $.subscribe('item:added', onAdded);
     $.subscribe('item:syncError', onSyncError);
     $.subscribe('item:showTodos', onShow);
@@ -30,7 +34,6 @@
       count();
     }
     function onDestroy(todo) {
-      console.log(todo);
       $.publish('item:remove', [todo]);
     }
     function itemToggle(todo, e) {
@@ -48,9 +51,8 @@
     }
 
     function onButtonClick(e) {
-      const type = e.target.id === 'unfinished' ? false : true;
-      $.publish(`item:button`, type);
-
+      const type = e.target.id !== 'unfinished';
+      $.publish('item:button', type);
     }
 
     function onKeyPress(event) {

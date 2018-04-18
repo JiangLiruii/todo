@@ -4,7 +4,7 @@
   $.subscribe('item:add', addList);
   $.subscribe('item:toggle', itemCompleted);
   $.subscribe('item:remove', itemRemove);
-  $.subscribe('item:button',buttonClick);
+  $.subscribe('item:button', buttonClick);
   const db = new PouchDB('todos');
   const remoteCouch = 'https://fcc9803d-0f80-4217-9b12-dd98150bbf3d-bluemix.cloudant.com/todos';
 
@@ -49,17 +49,16 @@
       }
     });
   }
-  function buttonClick(e,type) {
+  function buttonClick(e, type) {
     db.allDocs({ include_docs: true, descending: true }).then((doc) => {
-      let rows = [];
+      const rows = [];
       console.log(doc);
-      doc.rows.forEach(element => {
+      doc.rows.forEach((element) => {
         if (element.doc.completed === type) {
           rows.push(element);
         }
       });
-      $.publish('item:showTodos',[rows]);
-
-    }).catch(err=>console.error(err))
+      $.publish('item:showTodos', [rows]);
+    }).catch(err => console.error(err));
   }
 }(jQuery));
